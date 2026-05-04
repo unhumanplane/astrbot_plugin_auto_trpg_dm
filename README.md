@@ -1,6 +1,6 @@
 # AstrBot Auto TRPG DM
 
-全自然语言 TRPG DM 插件，基于 AstrBot v4.5.7+。当前插件版本：`v0.1.89`。
+全自然语言 TRPG DM 插件。当前插件版本：`v0.1.89`。
 
 这个插件把 AstrBot 变成一个可长期跑团的小型 TRPG runtime。玩家只需要像聊天一样说“我靠墙潜行过去，再射最近的敌人”，插件会结合当前场景、角色状态、战棋事实、本地规则和 LLM 裁定完成回应。
 
@@ -11,9 +11,8 @@
 - 纯文字跑团，希望玩家直接描述行动、追问和推进剧情。
 - 带轻量战棋或位置概念的团，需要明确移动、视线、距离、掩体和轮次。
 - 想让 AI 做 DM / 协同 DM，但仍希望关键事实、数值和规则执行有本地约束。
-- 需要长期存档、审计、恢复和可持续维护，而不是一次性 demo。
 
-它不是“全自动完美 DM”。更准确地说，它是一套把自然语言入口、状态机、工具调用、战棋事实、本地规则和可选外置记忆组合起来的工程骨架。LLM 负责理解与叙事，本地工具负责保存事实、执行规则和维护状态。
+这是一套把自然语言入口、状态机、工具调用、战棋事实、本地规则和可选外置记忆组合起来的工程骨架。LLM 负责理解与叙事，本地工具负责保存事实、执行规则和维护状态。
 
 ## 主要能力
 
@@ -22,7 +21,6 @@
 - 默认使用 `/dm` 作为显式入口，避免普通群聊被误接入 LLM。
 - 支持 `/DM`、`/Dm`、`/dM` 等大小写误用。
 - 玩家不需要记忆 `/move`、`/attack`、`/roll` 这类命令，Intent Router 会按场景选择工具。
-- 普通 DM 回复会抑制“1/2/3 选项”“还是 A/B/C”“下一步菜单”这类行动菜单，让玩家直接描述想尝试的行动；设计边界见 [docs/dm-outbound-cleanup.md](docs/dm-outbound-cleanup.md)。
 
 ### 跑团状态与角色
 
@@ -69,20 +67,13 @@ Recorder Agent，简称 RA，是可选的周期结算/记录 agent，默认关�
 
 如果底层 LLM provider 不支持透传 `max_tokens`，插件会自动重试一次不带 `max_tokens` 的调用，避免因为 provider 兼容性导致整轮流程失败。
 
-### 可选氛围图片
+### 可选游戏配图
 
-氛围图片是可选视觉辅助，默认关闭，不接受玩家直接命令生图。它和 SVG 战棋地图是两套功能：SVG 地图用于位置、距离、视线和战场示意；氛围图只用于渲染剧情气氛、帮助玩家理解关键场景，不会写入任何权威游戏事实。
+游戏配图是可选视觉辅助，默认关闭，不接受玩家直接命令生图。它和 SVG 战棋地图是两套功能：SVG 地图用于位置、距离、视线和战场示意；游戏配图用于渲染剧情气氛、帮助玩家理解关键场景，不会写入任何权威游戏事实。
 
-当前接入目标是 PackyAPI `gpt-image-2`，默认走 `/v1/images/generations`，也可以切换到 `/v1/chat/completions`。图片 API key、base URL、模型、尺寸、质量、返回格式、触发频率、活跃度门禁、prompt 语义去重和 prompt 模板都通过 AstrBot 插件配置设置。生成完成后会单独发送标题和图片，不附着到普通 `/dm` 回复上。
+当前接入目标是 `gpt-image-2`，默认走 `/v1/images/generations`，也可以切换到 `/v1/chat/completions`。图片 API key、base URL、模型、尺寸、质量、返回格式、触发频率、活跃度门禁、prompt 语义去重和 prompt 模板都通过 AstrBot 插件配置设置。生成完成后会单独发送标题和图片，不附着到普通 `/dm` 回复上。
 
-安全边界：
-
-- 下载 provider 返回的 URL 前会阻止 localhost、私网、link-local、reserved、multicast 等地址。
-- provider 响应、URL 下载和 `b64_json` 图片都有大小上限。
-- 图片下载会校验 content type。
-- 普通 `/dm` 回复不会等待图片生成，图片生成在后台任务中独立完成。
-
-完整配置、触发规则、隐私边界和费用风险见 [docs/ambient-image-api.md](docs/ambient-image-api.md)。
+完整配置、触发规则和费用风险见 [docs/ambient-image-api.md](docs/ambient-image-api.md)。
 
 ## 安装
 
@@ -129,7 +120,7 @@ pip install honcho
 - `ra_enabled=false`
 - `ambient_image_enabled=false`
 
-等基础流程稳定后，再逐项打开外置记忆、RA 或氛围图片。
+等基础流程稳定后，再逐项打开外置记忆、RA 或游戏配图。
 
 ## 常用配置
 
@@ -147,14 +138,14 @@ pip install honcho
 | `ra_enabled` | `false` | 是否启用 Recorder Agent。 |
 | `ra_model_provider` | `default` | RA 使用的模型 provider。 |
 | `ra_max_tokens` | `2048` | RA 输出 token 上限建议值。 |
-| `ambient_image_enabled` | `false` | 是否启用 TRPG 氛围图片。 |
+| `ambient_image_enabled` | `false` | 是否启用 TRPG 游戏配图。 |
 | `ambient_image_api_mode` | `images` | 图片 API 路径：`images` 或 `chat_completions`。 |
-| `ambient_image_base_url` | `https://www.packyapi.com` | 图片 API base URL。 |
+| `ambient_image_base_url` | 按配置填写 | 图片 API base URL。 |
 | `ambient_image_api_key` | 空 | 可直接填写图片 API key；留空时读取环境变量。 |
 | `ambient_image_api_key_env` | `PACKYAPI_SORA_API_KEY` | 图片 API key 所在环境变量名。 |
 | `ambient_image_user_agent` | 空 | 生图 API 请求的 User-Agent；留空时使用内置浏览器风格 UA。 |
-| `ambient_image_frequency` | `medium` | 普通氛围图触发频率。 |
-| `ambient_image_activity_window_minutes` | `60` | 普通氛围图活跃窗口。 |
+| `ambient_image_frequency` | `medium` | 普通游戏配图触发频率。 |
+| `ambient_image_activity_window_minutes` | `60` | 普通游戏配图活跃窗口。 |
 | `ambient_image_activity_min_messages` | `10` | 活跃窗口内最少玩家消息数。 |
 | `ambient_image_activity_min_players` | `2` | 活跃窗口内最少不同玩家数。 |
 
@@ -175,9 +166,7 @@ data/plugin_data/astrbot_plugin_auto_trpg_dm/
   logs/
 ```
 
-这些数据不应该提交到 Git。它们可能包含跑团记录、玩家发言摘要、地图输出和审计信息。
-
-插件默认不会把 Honcho、RA、氛围图片等增强能力打开。涉及外部服务的功能都需要你显式启用并配置对应 key 或服务地址。
+插件默认不会把 Honcho、RA、游戏配图等增强能力打开。涉及外部服务的功能都需要你显式启用并配置对应 key 或服务地址。
 
 ## 规则内容与归因
 
@@ -199,7 +188,7 @@ astrbot_plugin_auto_trpg_dm/
     models.py              # GameSession、角色、战斗和周期状态模型
     prompts.py             # 系统提示与模式提示
     external_memory.py     # Honcho 外置记忆适配
-    ambient_image.py       # 氛围图片 provider、安全校验和物化逻辑
+    ambient_image.py       # 游戏配图 provider、安全校验和物化逻辑
   tools/
     registry.py            # 按模式挂载工具
     memory_tools.py        # 角色、场景、世界设定和存档工具
@@ -208,7 +197,7 @@ astrbot_plugin_auto_trpg_dm/
     rule_tools.py          # 本地规则执行
     rulebook_tools.py      # DND 2024 / DM guidance 检索
     map_tools.py           # 视觉地图生成
-    ambient_image_tools.py # 氛围图片触发、prompt 和元数据保存
+    ambient_image_tools.py # 游戏配图触发、prompt 和元数据保存
   rules/
     python_runtime.py      # 受限 Python 规则运行时
     dice.py                # 骰子工具
@@ -238,21 +227,6 @@ GitHub Actions 会在 push 和 PR 上运行：
 - `python -m pip install -r astrbot_plugin_auto_trpg_dm/requirements.txt`
 - `python -m compileall -q astrbot_plugin_auto_trpg_dm tests`
 - `python -m pytest -q`
-
-## 稳定版仓库说明
-
-这个仓库是面向 AstrBot 插件市场发布的稳定版仓库，仓库名保持 `astrbot_plugin_auto_trpg_dm`，以满足官方命名要求。发布内容保留：
-
-- `astrbot_plugin_auto_trpg_dm/`
-- `docs/`
-- `tests/`
-- `README.md`
-- `CHANGELOG.md`
-- `.github/workflows/pr-check.yml`
-- `LICENSE`，代码使用 MIT License
-- `NOTICE`，说明 SRD 5.2 归因、规则卡边界和商标关系
-
-这个稳定仓库不带入 `.deploy/`、`.recovery/`、`tests/_tmp_runtime/`、本地地图输出、原始规则书资料、NAS 配置、SSH 私钥或真实 API key。
 
 ## 相关文档
 
