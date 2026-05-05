@@ -86,10 +86,19 @@ class _MockStar:
     pass
 
 
+class _MockStarTools:
+    @staticmethod
+    def get_data_dir():
+        from pathlib import Path
+
+        return Path("/tmp/astrbot_test/plugin_data/astrbot_plugin_auto_trpg_dm")
+
+
 _astrbot.api.event.AstrMessageEvent = MagicMock
 _astrbot.api.event.filter = MagicMock()
 _astrbot.api.star.Context = _MockContext
 _astrbot.api.star.Star = _MockStar
+_astrbot.api.star.StarTools = _MockStarTools
 _astrbot.api.star.register = lambda *a, **k: lambda c: c
 _astrbot.core.message.components.Image = MagicMock
 _astrbot.core.message.components.Plain = MagicMock

@@ -120,9 +120,6 @@ class JsonGameRepository:
     def audit_path(self, session_id: str) -> Path:
         return self.audit_dir / f"{self._safe_name(session_id)}.jsonl"
 
-    def plugin_log_path(self) -> Path:
-        return self.data_dir / "logs" / "auto_trpg_dm.log"
-
     def maps_dir(self) -> Path:
         path = self.data_dir / "maps"
         path.mkdir(parents=True, exist_ok=True)

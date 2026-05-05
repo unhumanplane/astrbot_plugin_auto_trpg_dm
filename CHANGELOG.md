@@ -12,6 +12,7 @@
 - 为 AstrBot 插件市场发布补齐 `requirements.txt`、`metadata.yaml` 仓库信息、展示名、短描述、平台声明和最低 AstrBot 版本。
 - 为随包 DND / SRD 摘要规则卡补充 README 版权边界说明和 SRD 5.2 attribution。
 - 新增标准 MIT `LICENSE` 和 `NOTICE`，明确代码许可、SRD 5.2 归因、规则卡边界和商标关系。
+- 稳定版改用 `StarTools.get_data_dir()` 和 AstrBot `logger`，移除独立文件日志以贴合插件市场 reviewer 标准。
 
 ### Changed
 

@@ -62,6 +62,13 @@ def _install_fake_astrbot_modules():
         def __init__(self, context=None):
             self.context = context
 
+    class FakeStarTools:
+        @staticmethod
+        def get_data_dir():
+            from pathlib import Path
+
+            return Path("/tmp/astrbot-data/plugin_data/astrbot_plugin_auto_trpg_dm")
+
     def register(*args, **kwargs):
         return lambda cls: cls
 
@@ -96,6 +103,7 @@ def _install_fake_astrbot_modules():
     event.filter = FakeFilter
     star.Context = object
     star.Star = FakeStar
+    star.StarTools = FakeStarTools
     star.register = register
     command.GreedyStr = GreedyStr
     components.Image = Image

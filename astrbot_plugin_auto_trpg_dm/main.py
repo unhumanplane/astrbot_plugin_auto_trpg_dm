@@ -12,11 +12,10 @@ from typing import Any, List
 
 from astrbot.api import logger
 from astrbot.api.event import AstrMessageEvent, filter
-from astrbot.api.star import Context, Star, register
+from astrbot.api.star import Context, Star, StarTools, register
 from astrbot.core.star.filter.command import GreedyStr
 from astrbot.core.message.components import Image as ImageComponent, Plain, Reply
 from astrbot.core.message.message_event_result import MessageChain
-from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 
 from .core.ambient_image import AmbientImageConfig, AmbientImageProvider
 from .core.external_memory import HonchoExternalMemory, HonchoMemoryConfig
@@ -59,9 +58,9 @@ class AutoTrpgDmPlugin(Star):
         self.trigger_prefixes = ["/dm"]
         self._recent_dm_messages: dict[tuple[str, str, str], float] = {}
         self._recent_dm_acks: dict[tuple[str, str], float] = {}
-        data_dir = Path(get_astrbot_data_path()) / "plugin_data" / "astrbot_plugin_auto_trpg_dm"
+        data_dir = StarTools.get_data_dir()
         self.repository = JsonGameRepository(data_dir)
-        self.plugin_logger = configure_plugin_logging(self.repository.plugin_log_path())
+        self.plugin_logger = configure_plugin_logging()
         rule_runtime = PythonRuleRuntime(data_dir / "rules")
         honcho_config = HonchoMemoryConfig(
             enabled=self._config_bool("honcho_enabled", False),

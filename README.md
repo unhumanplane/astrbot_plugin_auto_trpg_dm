@@ -207,7 +207,6 @@ data/plugin_data/astrbot_plugin_auto_trpg_dm/
   maps/
   ambient_images/
   rulebooks/
-  logs/
 ```
 
 插件默认不会把 Honcho、RA、游戏配图等增强能力打开。涉及外部服务的功能都需要你显式启用并配置对应 key 或服务地址。
@@ -278,5 +277,6 @@ GitHub Actions 会在 push 和 PR 上运行：
 - [docs/honcho-external-memory.md](docs/honcho-external-memory.md)
 - [docs/ambient-image-api.md](docs/ambient-image-api.md)
 - [docs/dm-outbound-cleanup.md](docs/dm-outbound-cleanup.md)
+- [docs/stable-release.md](docs/stable-release.md)
 - [docs/design.zh.md](docs/design.zh.md)
 - [docs/architecture_spec.md](docs/architecture_spec.md)

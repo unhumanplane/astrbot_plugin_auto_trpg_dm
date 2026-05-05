@@ -654,7 +654,6 @@ class MemoryTools:
                 "battle_active": bool(session.battle.get("active", False)),
                 "save_path": str(self.repository.save_path(self.session_id)),
                 "audit_path": str(self.repository.audit_path(self.session_id)),
-                "plugin_log_path": str(self.repository.plugin_log_path()),
                 "snapshot": snapshot,
             }
         elif normalized in {"reset", "new", "new_game", "重开", "新团", "开新团"}:
@@ -703,7 +702,6 @@ class MemoryTools:
                 "action": "debug_last",
                 "records": self.repository.last_audit_records(self.session_id, limit=20),
                 "audit_path": str(self.repository.audit_path(self.session_id)),
-                "plugin_log_path": str(self.repository.plugin_log_path()),
             }
         else:
             result = {
